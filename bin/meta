@@ -1,48 +1,80 @@
 #!/usr/bin/env bash
 # Meta Ads CLI Wrapper
+#
+# This script is the main entry point for running Meta Ads commands.
+# It loads client-specific credentials and runs the underlying Python CLI.
+#
+# Usage:
+#   meta <client-name> [command...]
+#
+# Example:
+#   meta acme-co campaigns list
+#   meta client-example adsets create --file creative.json
+#
+# How to customize for your company:
+#   1. Create a folder under clients/ with your company name
+#   2. Copy .env.example into that folder and rename it to .env
+#   3. Fill in your own META_ADS_ACCESS_TOKEN and META_ADS_ACCOUNT_ID
+#   4. Run commands using your client folder name
 
 set -euo pipefail
 
 HARNESS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 CLIENTS_DIR="$HARNESS_DIR/clients"
 
-CLIENT=""
-if [[ "${1:-}" == "--client" ]]; then
-  CLIENT="${2:-}"
-  shift 2
-elif [[ -n "${1:-}" && "${1}" != --* ]]; then
-  CLIENT="$1"
-  shift
-fi
+# Get client name from first argument
+CLIENT="${1:-}"
 
-if [[ -z "$CLIENT" ]]; then
-  echo "error: No client specified. Example: meta client-example campaigns list" >&2
+if [[ -z "$CLIENT" || "$CLIENT" == --* ]]; then
+  echo "error: Please specify a client name." >&2
+  echo "Example: meta client-example campaigns list" >&2
   exit 2
 fi
+
+shift
 
 ENV_FILE="$CLIENTS_DIR/$CLIENT/.env"
 
 if [[ ! -f "$ENV_FILE" ]]; then
-  echo "error: No config found for client '$CLIENT'" >&2
+  echo "error: No configuration found for client '$CLIENT'" >&2
+  echo "Expected file: $ENV_FILE" >&2
+  echo "" >&2
+  echo "To fix this:" >&2
+  echo "  1. Go to clients/ folder" >&2
+  echo "  2. Create or copy a client folder" >&2
+  echo "  3. Create a .env file with your credentials" >&2
   exit 2
 fi
 
+# Load client credentials
 set -a
 source "$ENV_FILE"
 set +a
 
+if [[ -z "${META_ADS_ACCESS_TOKEN:-}" || -z "${META_ADS_ACCOUNT_ID:-}" ]]; then
+  echo "error: META_ADS_ACCESS_TOKEN and META_ADS_ACCOUNT_ID are missing in $ENV_FILE" >&2
+  exit 2
+fi
+
+# Export variables expected by the Python CLI
 export ACCESS_TOKEN="$META_ADS_ACCESS_TOKEN"
 export AD_ACCOUNT_ID="$META_ADS_ACCOUNT_ID"
 
+# Location of the Python Meta Ads CLI project
+# You can override this in the client's .env file if needed
 PROJECT_DIR="${META_ADS_CLI_PROJECT:-$HOME/meta-ads-cli}"
 
 if [[ ! -d "$PROJECT_DIR" ]]; then
-  echo "error: Meta Ads CLI project not found at $PROJECT_DIR" >&2
+  echo "error: Meta Ads CLI project not found at: $PROJECT_DIR" >&2
+  echo "" >&2
+  echo "Options:" >&2
+  echo "  - Set META_ADS_CLI_PROJECT in clients/$CLIENT/.env" >&2
+  echo "  - Or install the CLI project at the default location" >&2
   exit 127
 fi
 
 if ! command -v uv >/dev/null 2>&1; then
-  echo "error: uv not found. Install it from https://docs.astral.sh/uv/" >&2
+  echo "error: 'uv' is not installed. Please install it from: https://docs.astral.sh/uv/" >&2
   exit 127
 fi
 
