@@ -1,29 +1,11 @@
 #!/usr/bin/env bash
 # Meta Ads CLI Wrapper
-# Part of automated-meta-ads-toolkit
-#
-# Usage:
-#   meta <client> [command...]           # Recommended
-#   meta --client <client> [command...]
-#
-# Examples:
-#   meta centr campaigns list
-#   meta centr adsets create --file creative.json
-#   meta hetal scale --budget-increase 0.15
-#
-# This wrapper:
-#   - Loads per-client credentials from clients/<client>/.env
-#   - Runs the underlying uv-managed Python Meta Ads CLI
-#   - Exports ACCESS_TOKEN + AD_ACCOUNT_ID in the format the CLI expects
 
 set -euo pipefail
 
 HARNESS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 CLIENTS_DIR="$HARNESS_DIR/clients"
 
-# -----------------------------
-# Parse client argument
-# -----------------------------
 CLIENT=""
 if [[ "${1:-}" == "--client" ]]; then
   CLIENT="${2:-}"
@@ -34,18 +16,7 @@ elif [[ -n "${1:-}" && "${1}" != --* ]]; then
 fi
 
 if [[ -z "$CLIENT" ]]; then
-  cat >&2 <<EOF
-error: No client specified.
-
-Usage:
-  meta <client> [command...]
-  meta --client <client> [command...]
-
-Available clients:
-$(ls "$CLIENTS_DIR" 2>/dev/null | cat || echo "  (no clients configured yet)")
-
-Example: meta centr campaigns list
-EOF
+  echo "error: No client specified. Example: meta client-example campaigns list" >&2
   exit 2
 fi
 
@@ -53,43 +24,25 @@ ENV_FILE="$CLIENTS_DIR/$CLIENT/.env"
 
 if [[ ! -f "$ENV_FILE" ]]; then
   echo "error: No config found for client '$CLIENT'" >&2
-  echo "Expected file: $ENV_FILE" >&2
-  echo "" >&2
-  echo "Create it from the .env.example in that client's folder." >&2
   exit 2
 fi
 
-# Load client-specific environment
 set -a
-# shellcheck disable=SC1090
 source "$ENV_FILE"
 set +a
 
-if [[ -z "${META_ADS_ACCESS_TOKEN:-}" || -z "${META_ADS_ACCOUNT_ID:-}" ]]; then
-  echo "error: META_ADS_ACCESS_TOKEN and META_ADS_ACCOUNT_ID must be set in $ENV_FILE" >&2
-  exit 2
-fi
-
-# Map to the variable names expected by the underlying Python CLI
 export ACCESS_TOKEN="$META_ADS_ACCESS_TOKEN"
 export AD_ACCOUNT_ID="$META_ADS_ACCOUNT_ID"
 
-# Allow per-client override of the CLI project location via .env
 PROJECT_DIR="${META_ADS_CLI_PROJECT:-$HOME/meta-ads-cli}"
 
 if [[ ! -d "$PROJECT_DIR" ]]; then
-  cat >&2 <<EOF
-error: Meta Ads CLI project not found at: $PROJECT_DIR
-
-Fix options:
-  1. Set META_ADS_CLI_PROJECT in clients/$CLIENT/.env
-  2. Create or clone the CLI project at the path above
-EOF
+  echo "error: Meta Ads CLI project not found at $PROJECT_DIR" >&2
   exit 127
 fi
 
 if ! command -v uv >/dev/null 2>&1; then
-  echo "error: 'uv' not found on PATH. Please install it from https://docs.astral.sh/uv/" >&2
+  echo "error: uv not found. Install it from https://docs.astral.sh/uv/" >&2
   exit 127
 fi
 
