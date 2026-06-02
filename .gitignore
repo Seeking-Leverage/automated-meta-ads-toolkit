@@ -1,0 +1,14 @@
+# Never commit real credentials
+.env
+clients/*/.env
+clients/*/.env.local
+
+# OS / Editor files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
