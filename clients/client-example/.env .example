@@ -1,0 +1,30 @@
+# Meta Ads CLI - Client Configuration
+# Copy this file to .env (which is gitignored) and fill in the real values.
+#
+# How to generate the token:
+#   Meta Business Manager → System Users → [Select user] → Generate New Token
+#   Required scope: ads_management
+
+# ─────────────────────────────────────────────────────────────
+# Token Lifecycle (for your reference only — not loaded as env vars)
+# Update these when you rotate the token.
+# TOKEN_GENERATED=YYYY-MM-DD
+# TOKEN_EXPIRES=YYYY-MM-DD (or "never" for system user tokens)
+# TOKEN_SOURCE=Meta Business Manager → System Users → <user name>
+# ─────────────────────────────────────────────────────────────
+
+# System User Access Token (long-lived, ads_management scope)
+META_ADS_ACCESS_TOKEN=
+
+# Ad Account ID (must include the "act_" prefix)
+META_ADS_ACCOUNT_ID=act_
+
+# Optional: Default Page ID for ad creation (leave blank if not needed)
+META_PAGE_ID=
+
+# Optional: Default Pixel ID for tracking (leave blank if not needed)
+META_PIXEL_ID=
+
+# Optional: Override location of the uv-managed Meta Ads CLI project
+# If unset, defaults to ~/meta-ads-cli
+# META_ADS_CLI_PROJECT=/path/to/your/meta-ads-cli
