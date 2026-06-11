@@ -13,7 +13,7 @@ Make sure you have:
 
 Create a new folder for your campaign inside your client directory:
 
-```bash
+bash
 mkdir -p clients/your-client-name/campaigns/my-campaign-slug/{images,videos,insights}
 Step 2: Create the campaign.yaml File
 Inside the campaign folder, create a campaign.yaml file using the structure defined in campaign-spec-schema.md.
