@@ -1,54 +1,82 @@
 # automated-meta-ads-toolkit
 
-Context of this document:
-This is the main README that appears when someone visits or clones the repo. It should clearly explain what the toolkit is, who it’s for, and how to get started. This is one of the most important files for making the project usable by other companies.
+A multi-client harness for running Meta Ads campaigns safely and repeatably. Clone it, add your clients, and manage ad accounts without mixing credentials.
 
-Copy and paste everything below into the root README.md file:
-Markdown# automated-meta-ads-toolkit
+## Who is this for?
 
-A clean, reusable CLI harness for managing Meta Ads across multiple clients.
+Agencies and in-house teams who want:
 
-## What is this?
+- **Isolated credentials** per client or brand
+- **Paused-by-default** campaign creation (no accidental spend)
+- **Version-controlled** campaign specs (`campaign.yaml` in git)
+- **Agent-driven launches** with validation, confirmation gates, and resumability
 
-This toolkit provides a simple, professional way to run and manage Meta Ads campaigns using the official Meta Ads CLI. It is designed so that other companies can easily clone this repo and start using it with their own accounts.
+## Quick start
 
-The goal is to make Meta Ads work repeatable and consistent, without tying you to any single client’s setup.
-
-## Quick Start
+**New here?** Follow the complete setup guide: **[docs/getting-started.md](docs/getting-started.md)**
 
 ```bash
-# Run a command for a specific client
-meta client-example campaigns list
+git clone https://github.com/Seeking-Leverage/automated-meta-ads-toolkit.git
+cd automated-meta-ads-toolkit
+export PATH="$PWD/bin:$PATH"
 
-# Launch a campaign
-meta client-example campaign launch my-campaign-slug
-How to Get Started
+cp -r clients/client-example clients/your-client
+cp clients/your-client/.env.example clients/your-client/.env
+# Edit .env with your Meta credentials
 
-Clone this repository
-Go into the clients/ folder
-Copy example-client and rename it to your client
-Fill in your credentials in the new client’s .env file
-Start running commands
+meta your-client auth status
+meta your-client -o json --no-input ads campaign list
+```
 
-See clients/README.md for detailed instructions on adding new clients.
-Project Structure
-textbin/meta                 → Main CLI wrapper
-clients/                 → Configuration for each client
-docs/                    → Guides, schemas, and playbooks
-Requirements
+## How campaigns work
 
-uv installed
-Python 3.12+
-A Meta Ads CLI project installed locally (see setup instructions in the docs)
+There is no `meta campaign launch` CLI command. The workflow is:
 
-Why This Toolkit?
+1. **Scaffold** — `/scaffold-meta-campaign <client> <slug>` creates the folder + starter `campaign.yaml`
+2. **Edit** — add creative assets and fill in copy, budget, targeting
+3. **Launch** — `/launch-meta-campaign <client> <slug>` walks the CLI chain with per-step confirmation
+4. **Review** — activate in Meta Ads Manager only after you are satisfied
 
-Keeps client credentials isolated and secure
-Provides reusable documentation and schemas
-Makes it easy to manage multiple ad accounts
-Designed to be cloned and customized by other companies
+See [docs/new-campaign-playbook.md](docs/new-campaign-playbook.md).
 
-Next Steps
+## Project structure
 
-Read clients/README.md to add your first client
-Explore the guides in the docs/ folder
+```
+bin/meta                              # CLI wrapper
+clients/<client>/
+  .env                                # credentials (gitignored)
+  goals.md                            # optimization vs success metrics
+  campaigns/<slug>/
+    campaign.yaml                     # intent
+    state.json                        # captured IDs
+    launch.log                        # launch timeline
+    images/ videos/ insights/
+docs/                                 # setup guide, schema, playbooks
+scripts/                              # pause-campaign, pull-insights
+.claude/skills/                       # scaffold + launch skills
+```
+
+## Requirements
+
+- [uv](https://docs.astral.sh/uv/) + Python 3.12+
+- Meta Ads CLI in a local uv project (default: `~/meta-ads-cli`) — [setup instructions](docs/getting-started.md#step-3-install-the-meta-ads-cli-external-project)
+- Meta Business Manager system user with ad account, Page, and Pixel assigned
+
+## Documentation
+
+| Doc | What it covers |
+| --- | --- |
+| [getting-started.md](docs/getting-started.md) | **Start here** — clone to first command |
+| [HARNESS.md](docs/HARNESS.md) | Architecture and design decisions |
+| [new-campaign-playbook.md](docs/new-campaign-playbook.md) | Launch workflow |
+| [04-campaign-spec-schema.md](docs/04-campaign-spec-schema.md) | `campaign.yaml` reference |
+| [clients/README.md](clients/README.md) | Managing multiple clients |
+
+## Scripts
+
+```bash
+./scripts/pause-campaign.sh <client> <slug>          # pause all resources
+./scripts/pull-insights.sh <client> <slug>             # snapshot performance data
+```
+
+See [scripts/README.md](scripts/README.md).

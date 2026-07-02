@@ -1,51 +1,95 @@
 # New Campaign Playbook
 
-A simple step-by-step guide to launching Meta Ads campaigns using this toolkit.
+Step-by-step guide to launching a Meta Ads campaign with this toolkit.
 
-## Before You Start
+## Before you start
 
-Make sure you have:
-- An ad image (minimum 1080×1080 pixels)
-- Ad copy ready (primary text, headline, destination URL, and CTA)
-- Basic decisions made (budget, targeting countries, campaign objective)
+Have ready:
 
-## Step 1: Create a Campaign Folder
+- An ad image (minimum 1080×1080 pixels) or video
+- Ad copy (primary text, headline, destination URL, CTA)
+- Budget, targeting countries, and campaign objective decided
+- Client `.env` filled in with token, ad account, page ID, and pixel ID
 
-Create a new folder for your campaign inside your client directory:
+## Step 1: Scaffold the campaign folder
 
-bash
-mkdir -p clients/your-client-name/campaigns/my-campaign-slug/{images,videos,insights}
-Step 2: Create the campaign.yaml File
-Inside the campaign folder, create a campaign.yaml file using the structure defined in campaign-spec-schema.md.
-Fill in your details (ad account ID, pixel ID, creative, etc.).
-Step 3: Add Your Creative Assets
-Place your ad image in the images/ folder (or video in videos/).
-Make sure the filename matches what you put in campaign.yaml.
-Step 4: Launch the Campaign
-Run the launch command:
-Bashmeta your-client-name campaign launch my-campaign-slug
-The harness will guide you through creating the campaign, ad set, creative, and ad. Everything will be created in PAUSED status.
-Step 5: Review in Meta Ads Manager
-After the launch completes:
+Use the **`scaffold-meta-campaign`** agent skill:
 
-Go to Meta Ads Manager
-Find your new campaign
-Review all settings, creatives, and targeting
-Only activate the campaign when you’re happy with everything
+```
+/scaffold-meta-campaign <client> <slug>
+```
 
-Step 6: Monitor Performance
-After the campaign has been running for 24–48 hours, pull insights:
-Bashmeta your-client-name insights pull my-campaign-slug
-Insights are saved in the insights/ folder and can be used for reporting.
-Tips
+Or create manually:
 
-Always keep campaigns paused until you’ve reviewed them
-Use clear, consistent naming in campaign.yaml
-Store repeated values (pixel ID, page ID) in your client’s .env file
-Use the pause-campaign.sh script if you need to quickly pause everything later
+```bash
+mkdir -p clients/your-client/campaigns/my-campaign-slug/{images,videos,insights}
+touch clients/your-client/campaigns/my-campaign-slug/insights/.gitkeep
+```
 
-Common Mistakes to Avoid
+## Step 2: Write campaign.yaml
 
-Forgetting to match creative_ref exactly with the creative name
-Using an image smaller than 1080×1080
-Activating the campaign before reviewing it in Ads Manager
+Create `clients/your-client/campaigns/my-campaign-slug/campaign.yaml` following [04-campaign-spec-schema.md](04-campaign-spec-schema.md).
+
+Use placeholder IDs from your client's `.env` for `ad_account_id`, `page_id`, and `pixel_id`.
+
+## Step 3: Add creative assets
+
+Place your image in `images/` (or video in `videos/`). The filename must match the path in `campaign.yaml`.
+
+## Step 4: Launch
+
+There is **no** `meta campaign launch` CLI command. Launch via the **`launch-meta-campaign`** agent skill:
+
+```
+/launch-meta-campaign <client> <slug>
+```
+
+The skill will:
+
+1. Validate the spec (stop on any error — zero writes)
+2. Show each CLI command and wait for your explicit "go"
+3. Create campaign → ad set → creatives → ads, all **PAUSED**
+4. Write IDs to `state.json` and events to `launch.log`
+5. Auto-append UTM tracking params to every `link_url`
+
+## Step 5: Review in Meta Ads Manager
+
+1. Open [Meta Ads Manager](https://adsmanager.facebook.com)
+2. Find your new campaign
+3. Review settings, creatives, targeting, and destination URLs
+4. Activate only when you are satisfied
+
+## Step 6: Monitor performance
+
+After 24–48 hours of runtime, pull insights:
+
+```bash
+./scripts/pull-insights.sh your-client my-campaign-slug
+```
+
+Snapshots land in `clients/your-client/campaigns/my-campaign-slug/insights/<YYYY-MM-DD>/`.
+
+## Step 7: Pause if needed
+
+```bash
+./scripts/pause-campaign.sh your-client my-campaign-slug
+# or dry-run first:
+./scripts/pause-campaign.sh --dry-run your-client my-campaign-slug
+```
+
+## Tips
+
+- Campaigns stay PAUSED until you activate them in Ads Manager
+- Store repeated IDs in the client's `.env` to avoid retyping
+- `creative_ref` must exactly match a `creatives[].name`
+- Use lowercase enums for `objective`, `custom_event_type`, and `cta`
+
+## Common mistakes
+
+| Mistake | Consequence |
+| --- | --- |
+| Wrong enum casing (`OUTCOME_SALES` instead of `outcome_sales`) | CLI rejects the command |
+| Image smaller than 1080×1080 | Validation fails before launch |
+| `creative_ref` typo | Ad creation fails mid-chain |
+| Activating before review | Unreviewed ads start spending |
+| Putting UTM params in YAML | Duplicated or inconsistent tracking |
