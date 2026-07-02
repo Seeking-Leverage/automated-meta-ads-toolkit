@@ -172,20 +172,33 @@ meta acme-co -o json --no-input ads campaign list
 
 There is no `meta campaign launch` command. Campaigns are launched via an **agent skill** (Claude Code) or manually via the CLI.
 
+### Start from the example (easiest)
+
+An unlaunched example is already in the repo:
+
+```
+clients/client-example/campaigns/example-traffic-jul26/
+├── campaign.yaml    ← edit IDs, copy, budget
+├── images/          ← add feed-v1.jpg (1080×1080+)
+└── README.md        ← customization guide
+```
+
+Copy `client-example` to your real client, edit the YAML, add a creative, then launch.
+
 ### Option A: With Claude Code (recommended)
 
 1. Open this repo in Claude Code
-2. Scaffold a campaign folder:
+2. Scaffold a new folder, or customize the example:
    ```
    /scaffold-meta-campaign acme-co summer-sale-jul26
    ```
-3. Drop a 1080×1080+ image into `clients/acme-co/campaigns/summer-sale-jul26/images/`
+3. Drop a 1080×1080+ image into `clients/acme-co/campaigns/<slug>/images/`
 4. Edit `campaign.yaml` with your copy, URLs, and budget
 5. Launch:
    ```
    /launch-meta-campaign acme-co summer-sale-jul26
    ```
-6. Review in [Meta Ads Manager](https://adsmanager.facebook.com) before activating
+6. Follow [02-review-and-launch.md](02-review-and-launch.md) before activating
 
 ### Option B: Manual CLI
 
@@ -219,6 +232,8 @@ See [clients/README.md](../clients/README.md) for details.
 | Launch campaign | `/launch-meta-campaign <client> <slug>` |
 | Pause campaign | `./scripts/pause-campaign.sh <client> <slug>` |
 | Pull insights | `./scripts/pull-insights.sh <client> <slug>` |
+| Review before activating | [02-review-and-launch.md](02-review-and-launch.md) |
+| Monitor performance | [03-performance-analysis.md](03-performance-analysis.md) |
 | Campaign YAML schema | [04-campaign-spec-schema.md](04-campaign-spec-schema.md) |
 | Architecture | [HARNESS.md](HARNESS.md) |
 

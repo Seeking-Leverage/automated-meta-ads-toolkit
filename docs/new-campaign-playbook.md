@@ -52,22 +52,21 @@ The skill will:
 4. Write IDs to `state.json` and events to `launch.log`
 5. Auto-append UTM tracking params to every `link_url`
 
-## Step 5: Review in Meta Ads Manager
+## Step 5: Review before activating
 
-1. Open [Meta Ads Manager](https://adsmanager.facebook.com)
-2. Find your new campaign
-3. Review settings, creatives, targeting, and destination URLs
-4. Activate only when you are satisfied
+Follow the full pre-activation checklist: **[02-review-and-launch.md](02-review-and-launch.md)**
+
+Do not activate until pixel, UTMs, budget, and creative preview all pass.
 
 ## Step 6: Monitor performance
 
-After 24–48 hours of runtime, pull insights:
+After 24–48 hours of runtime:
 
 ```bash
 ./scripts/pull-insights.sh your-client my-campaign-slug
 ```
 
-Snapshots land in `clients/your-client/campaigns/my-campaign-slug/insights/<YYYY-MM-DD>/`.
+See **[03-performance-analysis.md](03-performance-analysis.md)** for monitoring cadence and how to read results against `clients/<client>/goals.md`.
 
 ## Step 7: Pause if needed
 

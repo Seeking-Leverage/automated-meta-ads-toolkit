@@ -67,10 +67,14 @@ scripts/                              # pause-campaign, pull-insights
 | Doc | What it covers |
 | --- | --- |
 | [getting-started.md](docs/getting-started.md) | **Start here** — clone to first command |
-| [HARNESS.md](docs/HARNESS.md) | Architecture and design decisions |
 | [new-campaign-playbook.md](docs/new-campaign-playbook.md) | Launch workflow |
+| [02-review-and-launch.md](docs/02-review-and-launch.md) | Pre-activation checklist |
+| [03-performance-analysis.md](docs/03-performance-analysis.md) | Post-launch monitoring |
 | [04-campaign-spec-schema.md](docs/04-campaign-spec-schema.md) | `campaign.yaml` reference |
+| [HARNESS.md](docs/HARNESS.md) | Architecture and design decisions |
 | [clients/README.md](clients/README.md) | Managing multiple clients |
+
+**Example campaign:** `clients/client-example/campaigns/example-traffic-jul26/`
 
 ## Scripts
 

@@ -1,7 +1,7 @@
 # Campaign goals template
 
 Copy this file to `clients/<client>/goals.md` and fill in your client's metrics.
-Use it when analyzing performance — see `docs/03-performance-analysis.md` (coming soon).
+Use it when analyzing performance — see [docs/03-performance-analysis.md](../../docs/03-performance-analysis.md).
 
 ## The two-metric discipline
 

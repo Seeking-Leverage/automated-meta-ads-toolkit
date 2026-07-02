@@ -13,6 +13,8 @@
 | --- | --- |
 | [new-campaign-playbook.md](new-campaign-playbook.md) | End-to-end launch workflow (scaffold → launch → review) |
 | [01-campaign-setup-guide.md](01-campaign-setup-guide.md) | Manual CLI walkthrough (alternative to launch skill) |
+| [02-review-and-launch.md](02-review-and-launch.md) | Pre-activation checklist — review before spending |
+| [03-performance-analysis.md](03-performance-analysis.md) | Post-launch monitoring and reading insights |
 
 ## Reference
 
@@ -34,8 +36,11 @@ Located in `.claude/skills/`:
 
 Invocation rules: `.claude/rules/meta-ads.md`
 
+## Example campaign
+
+See `clients/client-example/campaigns/example-traffic-jul26/` for a ready-to-customize folder with `campaign.yaml`, images, and insights structure.
+
 ## Coming soon
 
-- `02-review-and-launch.md` — pre-activation checklist
-- `03-performance-analysis.md` — monitoring cadence and reading insights
 - `06-insights-breakdown-cheatsheet.md` — breakdown reference
+- `scripts/generate-report.py` — HTML email reports from insights snapshots

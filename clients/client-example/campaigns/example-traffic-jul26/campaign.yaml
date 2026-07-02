@@ -1,0 +1,39 @@
+# Example campaign spec — copy and customize for a real launch.
+# Schema reference: docs/04-campaign-spec-schema.md
+#
+# Before launching:
+#   1. Copy clients/client-example → clients/your-client and fill in .env
+#   2. Replace all placeholder IDs below (or use values from your .env)
+#   3. Add a 1080×1080+ image at images/feed-v1.jpg
+#   4. Run: /launch-meta-campaign your-client example-traffic-jul26
+
+ad_account_id: act_XXXXXXXXXXXXXXXXX   # or copy from clients/<client>/.env → META_ADS_ACCOUNT_ID
+
+campaign:
+  name: "20260702_Example_Traffic_US_LPV_Test"
+  objective: outcome_traffic
+  daily_budget_cents: 5000             # $50/day — lower for smoke tests
+
+adset:
+  name: "20260702_Example_Broad_US_V1"
+  optimization_goal: LANDING_PAGE_VIEWS
+  billing_event: IMPRESSIONS
+  countries: [US]
+  pixel_id: "123456789012345"          # from META_PIXEL_ID in .env (optional for traffic)
+  custom_event_type: purchase
+
+creatives:
+  - name: "Feed_V1"
+    image: images/feed-v1.jpg
+    page_id: "123456789012345"         # from META_PAGE_ID in .env
+    body: |
+      Replace this with your primary ad text. Keep it concise — hook, value, CTA.
+    title: "Your headline here"
+    link_url: https://yourdomain.com/landing-page
+    cta: learn_more
+
+ads:
+  - name: "Ad_V1"
+    creative_ref: "Feed_V1"
+
+# UTM tracking params are auto-appended by launch-meta-campaign — do not add them here.

@@ -36,6 +36,10 @@ meta your-client-name -o json --no-input ads --ad-account-id act_XXX campaign cr
 
 Add `bin/` to your PATH, or call `./bin/meta` from the repo root.
 
+## Example campaign
+
+`clients/client-example/campaigns/example-traffic-jul26/` is an unlaunched example with a valid `campaign.yaml`, folder structure, and a README. Copy and customize it when learning the workflow.
+
 ## Campaign folders
 
 Each campaign lives at `clients/<client>/campaigns/<slug>/`:
