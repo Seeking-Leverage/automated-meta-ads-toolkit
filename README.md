@@ -13,11 +13,14 @@ Agencies and in-house teams who want:
 
 ## Quick start
 
-**New here?** Follow the complete setup guide: **[docs/getting-started.md](docs/getting-started.md)**
+**New here?** Follow the self-service guide: **[docs/self-service-setup.md](docs/self-service-setup.md)** — clone, install the CLI, customize the harness for your ad accounts, and launch your first PAUSED campaign. Includes Linux/WSL notes and a private-repo workflow for agencies.
+
+Shorter path: [docs/getting-started.md](docs/getting-started.md)
 
 ```bash
 git clone https://github.com/Seeking-Leverage/automated-meta-ads-toolkit.git
 cd automated-meta-ads-toolkit
+chmod +x bin/meta
 export PATH="$PWD/bin:$PATH"
 
 cp -r clients/client-example clients/your-client
@@ -66,7 +69,8 @@ scripts/                              # pause-campaign, pull-insights
 
 | Doc | What it covers |
 | --- | --- |
-| [getting-started.md](docs/getting-started.md) | **Start here** — clone to first command |
+| [self-service-setup.md](docs/self-service-setup.md) | **Start here** — clone, customize, and launch on your own |
+| [getting-started.md](docs/getting-started.md) | Shorter setup path |
 | [new-campaign-playbook.md](docs/new-campaign-playbook.md) | Launch workflow |
 | [02-review-and-launch.md](docs/02-review-and-launch.md) | Pre-activation checklist |
 | [03-performance-analysis.md](docs/03-performance-analysis.md) | Post-launch monitoring |
@@ -84,3 +88,7 @@ scripts/                              # pause-campaign, pull-insights
 ```
 
 See [scripts/README.md](scripts/README.md).
+
+---
+
+Created by [Seeking Leverage](https://www.seekingleverage.com). Open-sourced for agencies and in-house teams running Meta Ads at scale.

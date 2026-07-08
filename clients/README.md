@@ -2,6 +2,8 @@
 
 Each folder under `clients/` represents one ad account (or one business you manage). Credentials and campaign data stay inside that folder.
 
+**First time?** See [docs/self-service-setup.md](../docs/self-service-setup.md) for the full clone-to-launch walkthrough.
+
 ## Add a new client
 
 ```bash

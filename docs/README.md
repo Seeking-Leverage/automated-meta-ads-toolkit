@@ -4,7 +4,8 @@
 
 | Doc | Audience | Purpose |
 | --- | --- | --- |
-| **[getting-started.md](getting-started.md)** | Everyone cloning the repo | Complete setup: prerequisites → Business Manager → first client → first command |
+| **[self-service-setup.md](self-service-setup.md)** | Anyone cloning the public repo | Full self-service path: install → customize → verify → launch; includes Linux/WSL notes and private-repo workflow |
+| [getting-started.md](getting-started.md) | Experienced operators | Shorter setup: prerequisites → Business Manager → first client → first command |
 | [clients/README.md](../clients/README.md) | Agencies with multiple clients | Adding clients, folder structure, rules |
 
 ## Workflows

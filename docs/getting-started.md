@@ -1,6 +1,8 @@
 # Getting Started
 
-Complete setup guide: clone this repo → run your first Meta Ads command → launch your first campaign.
+Shorter setup guide: clone this repo → run your first Meta Ads command → launch your first campaign.
+
+For the full self-service path (customizing the harness for your org, commit guidance, advanced options), see **[self-service-setup.md](self-service-setup.md)**.
 
 **Time required:** ~30–45 minutes (mostly Meta Business Manager setup).
 
@@ -44,9 +46,10 @@ git clone https://github.com/Seeking-Leverage/automated-meta-ads-toolkit.git
 cd automated-meta-ads-toolkit
 ```
 
-Add the wrapper to your PATH (add this to `~/.zshrc` or `~/.bashrc` to make it permanent):
+Make the wrapper executable and add it to your PATH (add the export line to `~/.zshrc` or `~/.bashrc` to make it permanent):
 
 ```bash
+chmod +x bin/meta
 export PATH="$PWD/bin:$PATH"
 ```
 
@@ -244,7 +247,7 @@ See [clients/README.md](../clients/README.md) for details.
 Use this to confirm your setup is complete:
 
 - [ ] `uv` installed
-- [ ] Repo cloned, `bin/meta` on PATH
+- [ ] Repo cloned, `chmod +x bin/meta`, `bin/` on PATH
 - [ ] Meta Ads CLI installed at `~/meta-ads-cli` (or custom path set in `.env`)
 - [ ] System user created in Business Manager
 - [ ] Ad account, Page, and Pixel assigned to system user

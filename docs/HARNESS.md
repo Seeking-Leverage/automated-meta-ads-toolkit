@@ -2,7 +2,7 @@
 
 How this toolkit fits together, and why it is designed this way.
 
-For setup instructions, see [getting-started.md](getting-started.md). For day-to-day workflows, see the numbered docs in [README.md](README.md).
+For setup instructions, see [self-service-setup.md](self-service-setup.md) (full path) or [getting-started.md](getting-started.md) (shorter). For day-to-day workflows, see the numbered docs in [README.md](README.md).
 
 ---
 
