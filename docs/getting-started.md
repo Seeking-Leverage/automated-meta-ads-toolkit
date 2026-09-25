@@ -69,7 +69,7 @@ The CLI lives in its own directory — **not inside this repo**.
 ```bash
 mkdir -p ~/meta-ads-cli && cd ~/meta-ads-cli
 uv init --python 3.12 --no-readme --no-pin-python --bare
-uv add meta-ads
+uv add "meta-ads==1.1.0"
 uv run meta --version
 ```
 

@@ -70,6 +70,8 @@ $META $CLIENT -o json --no-input ads --ad-account-id <ad_account_id> campaign li
 
 Stop if any read fails.
 
+- Budget cap: read META_MAX_DAILY_BUDGET_CENTS / META_MAX_LIFETIME_BUDGET_CENTS from clients/<client>/.env. If campaign.yaml's budget exceeds the cap, STOP and tell the user. Never raise the cap yourself.
+
 ### 3. Show launch plan
 
 Present a summary table (campaign, adset, creatives, ads, account, pixel, page). Ask: "Ready to launch? I'll confirm each write individually."

@@ -11,6 +11,23 @@ Agencies and in-house teams who want:
 - **Version-controlled** campaign specs (`campaign.yaml` in git)
 - **Agent-driven launches** with validation, confirmation gates, and resumability
 
+## ⚠️ Use a private copy — do not fork
+
+Forks of public repos are public. Your campaign specs, goals, and insights are client data.
+
+Create a private repo and pull updates from this one as `upstream`:
+
+```bash
+gh repo create <your-org>/meta-ads --private
+git clone https://github.com/Seeking-Leverage/automated-meta-ads-toolkit.git meta-ads
+cd meta-ads
+git remote rename origin upstream
+git remote add origin https://github.com/<your-org>/meta-ads.git
+git push -u origin main
+# later, to get toolkit updates:
+git pull upstream main
+```
+
 ## Quick start
 
 **New here?** Follow the self-service guide: **[docs/self-service-setup.md](docs/self-service-setup.md)** — clone, install the CLI, customize the harness for your ad accounts, and launch your first PAUSED campaign. Includes Linux/WSL notes and a private-repo workflow for agencies.
@@ -62,7 +79,7 @@ scripts/                              # pause-campaign, pull-insights
 ## Requirements
 
 - [uv](https://docs.astral.sh/uv/) + Python 3.12+
-- Meta Ads CLI in a local uv project (default: `~/meta-ads-cli`) — [setup instructions](docs/getting-started.md#step-3-install-the-meta-ads-cli-external-project)
+- Meta Ads CLI 1.1.0 (tested), installed in a local uv project (default: `~/meta-ads-cli`) — [setup instructions](docs/getting-started.md#step-3-install-the-meta-ads-cli-external-project)
 - Meta Business Manager system user with ad account, Page, and Pixel assigned
 
 ## Documentation
@@ -92,3 +109,7 @@ See [scripts/README.md](scripts/README.md).
 ---
 
 Created by [Seeking Leverage](https://www.seekingleverage.com). Open-sourced for agencies and in-house teams running Meta Ads at scale.
+
+## License
+
+MIT — see [LICENSE](LICENSE).

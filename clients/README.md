@@ -1,5 +1,7 @@
 # Clients
 
+Do not fork this public repo — forks are public. Keep client data in a private clone and pull toolkit updates from `upstream`.
+
 Each folder under `clients/` represents one ad account (or one business you manage). Credentials and campaign data stay inside that folder.
 
 **First time?** See [docs/self-service-setup.md](../docs/self-service-setup.md) for the full clone-to-launch walkthrough.
@@ -20,6 +22,7 @@ Required in `.env`:
 
 - `META_ADS_ACCESS_TOKEN` — system user token with `ads_management` scope
 - `META_ADS_ACCOUNT_ID` — ad account ID including `act_` prefix
+- `META_MAX_DAILY_BUDGET_CENTS` — spend ceiling enforced by `bin/meta`
 
 Optional:
 

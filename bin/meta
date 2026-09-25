@@ -33,6 +33,11 @@ fi
 
 shift
 
+if ! [[ "$CLIENT" =~ ^[A-Za-z0-9][A-Za-z0-9_-]*$ ]]; then
+  echo "error: invalid client name '$CLIENT' (letters, numbers, - and _ only)" >&2
+  exit 2
+fi
+
 ENV_FILE="$CLIENTS_DIR/$CLIENT/.env"
 
 if [[ ! -f "$ENV_FILE" ]]; then
@@ -46,10 +51,19 @@ if [[ ! -f "$ENV_FILE" ]]; then
   exit 2
 fi
 
-# Load client credentials
-set -a
-source "$ENV_FILE"
-set +a
+# Resolve 1Password references (op://...) if present.
+# Comment lines are ignored so the example in .env.example does not force `op`.
+if grep -vE '^[[:space:]]*#' "$ENV_FILE" | grep -q 'op://' && [[ -z "${META_OP_RESOLVED:-}" ]]; then
+  command -v op >/dev/null 2>&1 || { echo "error: $ENV_FILE uses op:// references but the 1Password CLI 'op' is not installed" >&2; exit 127; }
+  exec env META_OP_RESOLVED=1 op run --env-file="$ENV_FILE" -- "$0" "$CLIENT" "$@"
+fi
+
+# Load client credentials (skipped when op run already injected them)
+if [[ -z "${META_OP_RESOLVED:-}" ]]; then
+  set -a
+  source "$ENV_FILE"
+  set +a
+fi
 
 if [[ -z "${META_ADS_ACCESS_TOKEN:-}" || -z "${META_ADS_ACCOUNT_ID:-}" ]]; then
   echo "error: META_ADS_ACCESS_TOKEN and META_ADS_ACCOUNT_ID are missing in $ENV_FILE" >&2
@@ -77,6 +91,30 @@ if ! command -v uv >/dev/null 2>&1; then
   echo "error: 'uv' is not installed. Please install it from: https://docs.astral.sh/uv/" >&2
   exit 127
 fi
+
+# Hard spend ceiling: block any budget flag above the client's cap (fail closed if cap unset).
+# Campaign and ad set create/update all use --daily-budget and --lifetime-budget (meta-ads 1.1.0).
+check_budget_cap() {
+  local cap_var="$1" flag="$2"; shift 2
+  local cap="${!cap_var:-}" prev="" val
+  for arg in "$@"; do
+    val=""
+    if [[ "$prev" == "$flag" ]]; then val="$arg"
+    elif [[ "$arg" == "$flag="* ]]; then val="${arg#*=}"
+    fi
+    if [[ -n "$val" ]]; then
+      if [[ -z "$cap" ]]; then
+        echo "error: $flag used but $cap_var is not set in clients/$CLIENT/.env" >&2; exit 3
+      fi
+      if ! [[ "$val" =~ ^[0-9]+$ ]] || (( val > cap )); then
+        echo "error: $flag $val exceeds $cap_var=$cap for client '$CLIENT'" >&2; exit 3
+      fi
+    fi
+    prev="$arg"
+  done
+}
+check_budget_cap META_MAX_DAILY_BUDGET_CENTS --daily-budget "$@"
+check_budget_cap META_MAX_LIFETIME_BUDGET_CENTS --lifetime-budget "$@"
 
 cd "$PROJECT_DIR"
 exec uv run meta "$@"
