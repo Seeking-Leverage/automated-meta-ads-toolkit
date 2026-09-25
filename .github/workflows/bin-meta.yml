@@ -1,5 +1,8 @@
 name: bin-meta
 
+permissions:
+  contents: read
+
 on:
   push:
   pull_request:
@@ -9,5 +12,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - name: Install pinned meta-ads CLI
+        run: |
+          mkdir -p ~/meta-ads-cli && cd ~/meta-ads-cli
+          uv init --python 3.12 --no-readme --no-pin-python --bare
+          uv add "meta-ads==1.1.0"
       - name: Test bin/meta spend cap
         run: bash tests/bin-meta.sh
