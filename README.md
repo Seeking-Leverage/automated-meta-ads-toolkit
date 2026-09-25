@@ -1,5 +1,7 @@
 # automated-meta-ads-toolkit
 
+[![bin/meta tests](https://github.com/Seeking-Leverage/automated-meta-ads-toolkit/actions/workflows/bin-meta.yml/badge.svg)](https://github.com/Seeking-Leverage/automated-meta-ads-toolkit/actions/workflows/bin-meta.yml)
+
 A multi-client harness for running Meta Ads campaigns safely and repeatably. Clone it, add your clients, and manage ad accounts without mixing credentials.
 
 ## Who is this for?
@@ -81,6 +83,8 @@ scripts/                              # pause-campaign, pull-insights
 - [uv](https://docs.astral.sh/uv/) + Python 3.12+
 - Meta Ads CLI 1.1.0 (tested), installed in a local uv project (default: `~/meta-ads-cli`) — [setup instructions](docs/getting-started.md#step-3-install-the-meta-ads-cli-external-project)
 - Meta Business Manager system user with ad account, Page, and Pixel assigned
+
+The spend cap applies only when commands go through `bin/meta`. Running `uv run meta` directly bypasses it. meta-ads 1.1.0 has no budget params file; `--daily-budget` and `--lifetime-budget` are the only budget flags, and Click rejects shortened forms such as `--daily-bud` before any API call.
 
 ## Documentation
 

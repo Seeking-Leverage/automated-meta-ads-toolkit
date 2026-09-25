@@ -8,8 +8,9 @@
 #   meta <client-name> [command...]
 #
 # Example:
-#   meta acme-co campaigns list
-#   meta client-example adsets create --file creative.json
+#   meta acme-co -o json --no-input ads campaign list
+#   meta acme-co -o json --no-input ads --ad-account-id act_XXX campaign create \
+#     --name "Example" --objective outcome_traffic --daily-budget 5000
 #
 # How to customize for your company:
 #   1. Create a folder under clients/ with your company name
@@ -27,7 +28,7 @@ CLIENT="${1:-}"
 
 if [[ -z "$CLIENT" || "$CLIENT" == --* ]]; then
   echo "error: Please specify a client name." >&2
-  echo "Example: meta client-example campaigns list" >&2
+  echo "Example: meta client-example -o json --no-input ads campaign list" >&2
   exit 2
 fi
 
@@ -94,6 +95,8 @@ fi
 
 # Hard spend ceiling: block any budget flag above the client's cap (fail closed if cap unset).
 # Campaign and ad set create/update all use --daily-budget and --lifetime-budget (meta-ads 1.1.0).
+# Click rejects shortened flags (--daily-bud) before any API call. There is no params file
+# on those commands; --targeting and --promoted-object JSON are not budget fields.
 check_budget_cap() {
   local cap_var="$1" flag="$2"; shift 2
   local cap="${!cap_var:-}" prev="" val
