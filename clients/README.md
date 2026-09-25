@@ -20,9 +20,14 @@ cp clients/your-client-name/.env.example clients/your-client-name/.env
 
 Required in `.env`:
 
-- `META_ADS_ACCESS_TOKEN` — system user token with `ads_management` scope
-- `META_ADS_ACCOUNT_ID` — ad account ID including `act_` prefix
-- `META_MAX_DAILY_BUDGET_CENTS` — spend ceiling enforced by `bin/meta`
+- `META_ADS_ACCESS_TOKEN` — system user token. Use `ads_read` for a reporting-only client. Add `ads_management` only when this client creates or edits campaigns.
+- `META_ADS_ACCOUNT_ID` — ad account ID including the `act_` prefix
+- `META_MAX_DAILY_BUDGET_CENTS` — highest daily budget `meta` will send, in cents (`10000` = $100)
+- `META_MAX_LIFETIME_BUDGET_CENTS` — highest lifetime budget `meta` will send, in cents (`300000` = $3,000)
+
+If a budget is above the cap, or a cap line is missing, `meta` stops and does not call Meta. Run commands as `meta <client> ...` or `./bin/meta <client> ...`. `uv run meta` does not apply the cap.
+
+A 1Password value works in place of a plaintext token: `META_ADS_ACCESS_TOKEN=op://Vault/item/field`. The 1Password CLI (`op`) must be installed.
 
 Optional:
 

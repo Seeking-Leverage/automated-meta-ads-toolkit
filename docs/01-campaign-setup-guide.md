@@ -31,7 +31,7 @@ meta your-client -o json --no-input ads --ad-account-id act_XXXXXXXX campaign cr
   --daily-budget 5000
 ```
 
-Budget is in cents (5000 = $50/day). Save the campaign ID from the JSON response (`.[0].id`).
+Budget is in cents (5000 = $50/day). `meta` refuses the command when that number is above `META_MAX_DAILY_BUDGET_CENTS` in the client's `.env`, and nothing is sent to Meta. Save the campaign ID from the JSON response (`.[0].id`).
 
 Valid objectives (lowercase): `outcome_sales`, `outcome_traffic`, `outcome_awareness`, `outcome_engagement`, `outcome_leads`, `outcome_app_promotion`
 

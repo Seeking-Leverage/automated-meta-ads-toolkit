@@ -28,7 +28,7 @@ All objects should be **PAUSED**.
 
 Open Ads Manager and confirm:
 
-- [ ] Campaign name, objective, and daily budget are correct
+- [ ] Campaign name, objective, and daily budget are correct, and the budget is at or under the client's cap in `.env`
 - [ ] Ad set countries match your plan (CLI only sets geo — check age/gender/placements if edited manually)
 - [ ] Pixel ID and conversion event type are correct (for conversion campaigns)
 - [ ] Optimization goal and billing event are correct

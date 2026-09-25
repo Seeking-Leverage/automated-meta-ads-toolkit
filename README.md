@@ -84,7 +84,13 @@ scripts/                              # pause-campaign, pull-insights
 - Meta Ads CLI 1.1.0 (tested), installed in a local uv project (default: `~/meta-ads-cli`) — [setup instructions](docs/getting-started.md#step-3-install-the-meta-ads-cli-external-project)
 - Meta Business Manager system user with ad account, Page, and Pixel assigned
 
-The spend cap applies only when commands go through `bin/meta`. Running `uv run meta` directly bypasses it. meta-ads 1.1.0 has no budget params file; `--daily-budget` and `--lifetime-budget` are the only budget flags, and Click rejects shortened forms such as `--daily-bud` before any API call.
+## Spend ceiling
+
+Each client `.env` sets the most you are willing to spend, in cents. The example starts at **$100/day** (`META_MAX_DAILY_BUDGET_CENTS=10000`) and **$3,000 lifetime** (`META_MAX_LIFETIME_BUDGET_CENTS=300000`). Change those two numbers for each client.
+
+`meta` refuses a create or update when `--daily-budget` or `--lifetime-budget` is above that client's cap. It also refuses the command if a cap line is missing. Nothing is sent to Meta. Listing campaigns and pulling insights are not budget writes, so they still run.
+
+Use `meta` or `./bin/meta`. Running `uv run meta` inside `~/meta-ads-cli` skips the ceiling.
 
 ## Documentation
 

@@ -67,6 +67,10 @@ Campaign intent lives in `campaign.yaml` under git. This makes specs diffable, r
 
 The launch skill never passes `--status active`. Activation is a separate human action in Ads Manager. This is an air gap between "created" and "spending."
 
+### Spend ceiling per client
+
+`bin/meta` reads `META_MAX_DAILY_BUDGET_CENTS` and `META_MAX_LIFETIME_BUDGET_CENTS` from that client's `.env`. A `--daily-budget` or `--lifetime-budget` above the cap, or a budget flag with the cap missing, stops before the CLI runs. `uv run meta` invoked on its own does not apply the ceiling.
+
 ### CLI lives outside the repo
 
 The `meta-ads` Python package is a separate uv project. Different toolchain, independent upgrades, no false signal on `git status`. Override path per client via `META_ADS_CLI_PROJECT`.

@@ -21,12 +21,12 @@ Your machine
 | Layer | What it does | You customize? |
 | --- | --- | --- |
 | **Meta Ads CLI** (`~/meta-ads-cli`) | Talks to Meta's Graph API | Path per client via `.env` if needed |
-| **`bin/meta` wrapper** | Loads `clients/<client>/.env`, runs the CLI | Rarely — works out of the box |
+| **`bin/meta` wrapper** | Loads `clients/<client>/.env`, enforces that client's spend ceiling, runs the CLI | Set the two budget caps in each `.env` |
 | **`clients/<client>/`** | Credentials, campaign specs, assets | **Yes — this is your workspace** |
 | **`.claude/skills/`** | Agent procedures for scaffold + launch | Optional — copy to your AI tool |
 | **`scripts/`** | Pause campaigns, pull insights | Optional — edit if your workflow differs |
 
-Everything you create for your business lives under `clients/`. That folder is designed to stay local (credentials are gitignored) or be committed to a **private fork** if your team wants version-controlled specs without sharing tokens.
+Everything you create for your business lives under `clients/`. Credentials stay in `.env` and are never committed. Campaign specs can live in a **private repo** that pulls updates from this public one. Do not use GitHub's Fork button: a normal fork of a public repo is public.
 
 ---
 
@@ -107,7 +107,7 @@ This step is required. Without these assignments, API calls fail with opaque per
 
 1. **System Users → [your user] → Generate New Token**
 2. Select your app (create one in [Meta for Developers](https://developers.facebook.com) if needed)
-3. Scopes: **`ads_management`**, **`ads_read`**
+3. Scopes: **`ads_read`** for reporting. Add **`ads_management`** only for accounts where you will create or edit campaigns. If Business Manager offers a token expiry, prefer it over "never".
 4. Copy the token immediately — you cannot view it again
 
 ### 2d. Collect IDs for your `.env`
@@ -141,7 +141,7 @@ cp clients/your-client-name/.env.example clients/your-client-name/.env
 ### 3b. Fill in `clients/your-client-name/.env`
 
 ```bash
-# System user token (ads_management + ads_read)
+# System user token. ads_read for reporting; add ads_management only to launch or edit.
 META_ADS_ACCESS_TOKEN=your_token_here
 
 # Ad account — must include act_ prefix
@@ -151,6 +151,11 @@ META_ADS_ACCOUNT_ID=act_1234567890
 META_PAGE_ID=123456789012345
 META_PIXEL_ID=123456789012345
 
+# Spend ceiling for this client, in cents. Example: $100/day and $3,000 lifetime.
+# meta refuses any higher --daily-budget or --lifetime-budget.
+META_MAX_DAILY_BUDGET_CENTS=10000
+META_MAX_LIFETIME_BUDGET_CENTS=300000
+
 # Only if CLI is not at ~/meta-ads-cli:
 # META_ADS_CLI_PROJECT=/custom/path/to/meta-ads-cli
 ```
@@ -159,7 +164,10 @@ META_PIXEL_ID=123456789012345
 
 - One `.env` per client folder — never put credentials in the repo root
 - Never commit `.env` — it is gitignored by default
+- Keep both budget caps. If either line is missing, `meta` refuses every command that sets a budget. Listing and insights still work.
+- Run commands with `meta` or `./bin/meta`. `uv run meta` talks to Meta directly and ignores the ceiling.
 - Rotate tokens in Business Manager; update `.env` and note dates in the comments at the top of `.env.example`
+- A 1Password reference works as the token value: `META_ADS_ACCESS_TOKEN=op://Vault/item/field`, with the `op` CLI installed
 
 ### 3c. Define business goals (optional but recommended)
 
@@ -234,7 +242,7 @@ Replace every placeholder before launching:
 | `page_id` | `META_PAGE_ID` from `.env` |
 | `pixel_id` | `META_PIXEL_ID` from `.env` (required for conversion campaigns) |
 | `body`, `title`, `link_url` | Your ad copy and landing page |
-| `daily_budget_cents` | Your test budget (5000 = $50/day) |
+| `daily_budget_cents` | Your test budget in cents (5000 = $50/day). Must be at or under `META_MAX_DAILY_BUDGET_CENTS` in this client's `.env`. |
 
 Add creative:
 
@@ -547,15 +555,11 @@ git push origin main
 
 Do this monthly or when release notes mention changes you want. Your `clients/` data merges cleanly in most cases because upstream only touches `client-example`.
 
-### Alternative: GitHub private fork
+### Do not use the Fork button
 
-GitHub lets you fork into a **private** repo (if your org plan allows it):
+A normal fork of this public repo is public. Client specs, goals, and insights would be published with it.
 
-1. Fork `Seeking-Leverage/automated-meta-ads-toolkit` → private fork under your org
-2. Clone your private fork
-3. Add the public repo as `upstream` (same merge workflow as above)
-
-This is fine as long as the fork visibility is **Private**.
+Create a private repository and pull updates from this one as `upstream`, as shown above. If a repo you already created says Public, do not put client folders in it.
 
 ### Credential handoff between teammates
 
@@ -563,7 +567,7 @@ This is fine as long as the fork visibility is **Private**.
 
 | Method | Notes |
 | --- | --- |
-| **Secrets manager** (1Password, Vault) | Best for agencies — one vault item per client |
+| **Secrets manager** (1Password, Vault) | Best for agencies — one vault item per client. `bin/meta` resolves `op://` values when the `op` CLI is installed. |
 | **Secure DM / encrypted share** | OK for small teams; rotate after handoff |
 | **Each person generates their own token** | Create separate system users or tokens per operator in Business Manager |
 
@@ -588,8 +592,8 @@ Use this to confirm you are ready to launch:
 - [ ] Meta Ads CLI installed at `~/meta-ads-cli` (or custom path in `.env`)
 - [ ] System user created in Business Manager
 - [ ] Ad account, Page, and Pixel assigned to system user
-- [ ] Token generated with `ads_management` + `ads_read`
-- [ ] Client folder created: `clients/your-client-name/.env` filled in
+- [ ] Token generated with `ads_read`, plus `ads_management` only if this client will create or edit campaigns
+- [ ] Client folder created: `clients/your-client-name/.env` filled in, including both budget caps
 - [ ] `meta your-client-name auth status` succeeds
 - [ ] `meta your-client-name -o json --no-input ads campaign list` succeeds
 - [ ] Campaign folder exists with edited `campaign.yaml`

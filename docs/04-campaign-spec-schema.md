@@ -30,6 +30,8 @@ campaign:
   name: "20260702_Meta_Web_Prospecting_US_Purchase_Broad_Test"
   objective: outcome_sales   # lowercase snake_case — see enum below
   daily_budget_cents: 5000   # 5000 = $50.00. Mutually exclusive with lifetime_budget_cents.
+                             # Must be at or under META_MAX_DAILY_BUDGET_CENTS in the client .env.
+                             # lifetime_budget_cents must be at or under META_MAX_LIFETIME_BUDGET_CENTS.
   # lifetime_budget_cents: 50000
 
 # Required: ad set settings
@@ -149,7 +151,7 @@ The launch skill verifies all of these **before any write**. On failure: stop, l
 | `ad_account_id` | `meta ads --ad-account-id act_XXX` |
 | `campaign.name` | `meta ads campaign create --name` |
 | `campaign.objective` | `--objective` (lowercase) |
-| `campaign.daily_budget_cents` | `--daily-budget` |
+| `campaign.daily_budget_cents` | `--daily-budget` (blocked by `bin/meta` when above the client cap) |
 | `adset.optimization_goal` | `--optimization-goal` (UPPERCASE) |
 | `adset.custom_event_type` | `--custom-event-type` (lowercase) |
 | `creatives[].cta` | `--call-to-action` (lowercase) |
