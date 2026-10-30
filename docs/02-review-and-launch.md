@@ -103,13 +103,13 @@ Verify:
 
 Activation is a **human decision** — not automated by the launch skill.
 
-Show the user the exact commands and wait for explicit approval:
+`meta` refuses `--status ACTIVE`. Activation goes through one script, which sets campaign, ad set, and ads to ACTIVE and appends `ops.log`. Show the user the ids and wait for explicit approval, then:
 
 ```bash
-meta your-client -o json --no-input ads --ad-account-id act_XXX campaign update CAMPAIGN_ID --status ACTIVE
-meta your-client -o json --no-input ads --ad-account-id act_XXX adset update ADSET_ID --status ACTIVE
-meta your-client -o json --no-input ads --ad-account-id act_XXX ad update AD_ID --status ACTIVE
+./scripts/activate-campaign.sh --confirm your-client your-slug
 ```
+
+`--dry-run` prints the updates and does not call Meta. Ads Manager remains a valid way to turn the same paused objects on.
 
 **Common activation failures:**
 
@@ -158,11 +158,7 @@ Expect non-zero impressions and spend within a few hours.
 ./scripts/pause-campaign.sh your-client your-slug
 ```
 
-Or pause the campaign directly (stops all delivery under it):
-
-```bash
-meta your-client -o json --no-input ads --ad-account-id act_XXX campaign update CAMPAIGN_ID --status PAUSED
-```
+A failed ad update does not skip the campaign pause. Results are appended to `ops.log`.
 
 ---
 

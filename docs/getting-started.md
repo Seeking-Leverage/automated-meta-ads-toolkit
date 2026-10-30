@@ -32,9 +32,8 @@ meta acme-co -o json --no-input ads campaign list
 | Tool | Purpose | Install |
 | --- | --- | --- |
 | **uv** | Runs the Meta Ads CLI | https://docs.astral.sh/uv/ |
-| **Python 3.12+** | Required by meta-ads | `uv` manages this automatically |
+| **Python 3.12+** | Required by meta-ads. The campaign validator uses it to read image dimensions | `uv` manages this automatically |
 | **jq** | Parses state.json in scripts | `brew install jq` (macOS) |
-| **sips** | Image dimension checks (macOS) | Preinstalled on macOS |
 | **ffprobe** | Video dimension checks (optional) | `brew install ffmpeg` |
 
 ---
@@ -241,7 +240,9 @@ See [clients/README.md](../clients/README.md) for details.
 | List campaigns | `meta <client> -o json --no-input ads campaign list` |
 | Scaffold campaign | `/scaffold-meta-campaign <client> <slug>` |
 | Launch campaign | `/launch-meta-campaign <client> <slug>` |
+| Validate spec | `./scripts/validate-campaign.sh <client> <slug>` |
 | Pause campaign | `./scripts/pause-campaign.sh <client> <slug>` |
+| Activate campaign | `./scripts/activate-campaign.sh --confirm <client> <slug>` |
 | Pull insights | `./scripts/pull-insights.sh <client> <slug>` |
 | Review before activating | [02-review-and-launch.md](02-review-and-launch.md) |
 | Monitor performance | [03-performance-analysis.md](03-performance-analysis.md) |

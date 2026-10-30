@@ -47,18 +47,15 @@ STATE="$CAMPAIGN_DIR/state.json"
 
 ### 1. Load and validate
 
-1. Read `clients/<client>/campaigns/<slug>/campaign.yaml`
-2. Validate per `docs/04-campaign-spec-schema.md`:
-   - Required fields present
-   - `daily_budget_cents` XOR `lifetime_budget_cents`
-   - If `OFFSITE_CONVERSIONS`: `pixel_id` + `custom_event_type` required
-   - Each creative: exactly one of `image:` or `video:`
-   - Image exists + ≥1080×1080 (`sips -g pixelWidth -g pixelHeight`)
-   - Video exists; if `ffprobe` available, check ≥1080×1080
-   - Every `page_id` set; every `creative_ref` matches a `creatives[].name`
-   - Valid `cta` (lowercase); countries are 2-letter uppercase ISO codes
-3. **Stop on any failure** — list all errors, zero writes
-4. Read existing `state.json` if present — skip completed steps
+Run the checker. It encodes the schema, the spend cap, and image dimensions (PNG, JPEG, GIF — no `sips`):
+
+```bash
+"$REPO_ROOT/scripts/validate-campaign.sh" "$CLIENT" "$SLUG"
+```
+
+**Stop on any failure** — the script lists every error, and you do zero writes.
+
+Read existing `state.json` if present — skip completed steps.
 
 ### 2. Sanity checks (read-only, no confirmation)
 
@@ -102,19 +99,17 @@ $META $CLIENT -o json --no-input ads --ad-account-id <ad_account_id> adset creat
   --name "<adset.name>" \
   --optimization-goal <adset.optimization_goal> \
   --billing-event <adset.billing_event> \
-  --targeting-countries <comma-separated countries> \
-  --pixel-id <adset.pixel_id> \
-  --custom-event-type <adset.custom_event_type>
+  --targeting-countries <comma-separated countries>
 ```
 
-`custom_event_type` must be lowercase (`purchase`, `lead`, `start_trial`, etc.).
+Add `--pixel-id` and `--custom-event-type` only when `optimization_goal` is `OFFSITE_CONVERSIONS`. `custom_event_type` is lowercase (`purchase`, `lead`, `start_trial`).
 
-If bid strategy fails with "Bid amount required", patch via Graph API:
+Do not pass `--status`. The wrapper rejects anything but `PAUSED`, and the pinned CLI creates objects paused.
+
+If bid strategy fails with "Bid amount required", patch via Graph API. Do not put the token on the command line, and do not send budget or status fields this way:
 
 ```bash
-curl -X POST "https://graph.facebook.com/v19.0/<CAMPAIGN_ID>" \
-  -d "bid_strategy=LOWEST_COST_WITHOUT_CAP" \
-  -d "access_token=$META_ADS_ACCESS_TOKEN"
+"$REPO_ROOT/scripts/graph.sh" "$CLIENT" POST "<CAMPAIGN_ID>" bid_strategy=LOWEST_COST_WITHOUT_CAP
 ```
 
 Log as `out_of_band_patch`. Save `state.adset.id`.
@@ -160,7 +155,7 @@ Set `state.completed_at`. Append `launch_complete` to `launch.log`. Show:
 
 - All object IDs
 - Ads Manager link: `https://business.facebook.com/adsmanager/manage/campaigns?act=<id without act_>&selected_campaign_ids=<campaign_id>`
-- Reminder: **everything is PAUSED** — activate in Ads Manager after review
+- Reminder: **everything is PAUSED** — activate only after review, with `scripts/activate-campaign.sh --confirm` or in Ads Manager
 
 ## Resume behaviour
 
@@ -168,7 +163,7 @@ If `state.json` has partial data, reuse existing IDs and skip completed steps. T
 
 ## Don'ts
 
-- No `--status active`
+- No `--status` on creates, and no `--status ACTIVE` through `meta` (use `scripts/activate-campaign.sh --confirm`)
 - No silent retries
 - No writes after validation failure
 - No auto-activation

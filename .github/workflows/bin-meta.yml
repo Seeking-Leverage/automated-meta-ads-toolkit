@@ -11,12 +11,24 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v6
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6.8.0
       - name: Install pinned meta-ads CLI
         run: |
           mkdir -p ~/meta-ads-cli && cd ~/meta-ads-cli
           uv init --python 3.12 --no-readme --no-pin-python --bare
           uv add "meta-ads==1.1.0"
+      - name: Shellcheck
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y shellcheck
+          shellcheck -x -S warning bin/meta bin/lib/client-env.sh scripts/*.sh tests/*.sh
       - name: Test bin/meta spend cap
         run: bash tests/bin-meta.sh
+      - name: Test pause, activate, validate, and insights
+        run: bash tests/harness.sh
+      - name: Pinned CLI help smoke
+        run: |
+          cd ~/meta-ads-cli
+          uv run meta --help >/dev/null
+          uv run meta ads campaign create --help >/dev/null

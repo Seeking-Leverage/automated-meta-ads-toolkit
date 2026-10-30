@@ -23,7 +23,8 @@ cp clients/your-client/.env.example clients/your-client/.env
 # 3. Add creative
 cp /path/to/your-image.jpg clients/your-client/campaigns/example-traffic-jul26/images/feed-v1.jpg
 
-# 4. Launch (via Claude Code skill)
+# 4. Validate, then launch (via Claude Code skill)
+./scripts/validate-campaign.sh your-client example-traffic-jul26
 /launch-meta-campaign your-client example-traffic-jul26
 
 # 5. Review before activating — see docs/02-review-and-launch.md

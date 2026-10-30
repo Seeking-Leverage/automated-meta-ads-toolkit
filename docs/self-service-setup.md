@@ -39,7 +39,7 @@ Everything you create for your business lives under `clients/`. Credentials stay
 | **git** | Clone the repo | Preinstalled on most systems |
 | **uv** | Runs the Meta Ads CLI | https://docs.astral.sh/uv/ |
 | **jq** | Parses JSON in scripts | macOS: `brew install jq` — Linux: `sudo apt install jq` |
-| **sips** or **ImageMagick** | Image dimension checks at launch | macOS: `sips` (preinstalled) — Linux: `identify` via ImageMagick — see [Linux and WSL notes](#linux-and-wsl-notes) |
+| **Python 3** | Image dimension checks in `validate-campaign.sh` | Installed with `uv` — see [Linux and WSL notes](#linux-and-wsl-notes) |
 | **ffprobe** | Video dimension checks (optional) | macOS: `brew install ffmpeg` — Linux: `sudo apt install ffmpeg` |
 
 Running on Linux or WSL? Read [Linux and WSL notes](#linux-and-wsl-notes) before your first launch.
@@ -399,18 +399,11 @@ sudo dnf install -y git jq ImageMagick ffmpeg
 
 ### Image dimension checks
 
-The launch skill validates creatives are **≥ 1080×1080** before any write. On macOS it uses `sips`. On Linux, use ImageMagick's `identify`:
+`scripts/validate-campaign.sh` checks that creatives are **≥ 1080×1080** before any write. It reads PNG, JPEG, and GIF dimensions itself, on macOS and Linux.
 
 ```bash
-# macOS
-sips -g pixelWidth -g pixelHeight clients/your-client/campaigns/my-campaign/images/feed-v1.jpg
-
-# Linux / WSL
-identify -format "%wx%h" clients/your-client/campaigns/my-campaign/images/feed-v1.jpg
-# → 1080x1080 (both dimensions must be ≥ 1080)
+./scripts/validate-campaign.sh your-client my-campaign
 ```
-
-If you launch via an AI agent, tell it you are on Linux — it should use `identify` instead of `sips`. If launching manually, run the `identify` command yourself before proceeding.
 
 ### Video dimension checks (optional)
 
@@ -456,7 +449,7 @@ The launch skill handles this automatically. For manual CLI launches, use `realp
 
 | Error | Fix |
 | --- | --- |
-| `sips: command not found` | Use `identify` (ImageMagick) — see above |
+| Image rejected as too small | Run `./scripts/validate-campaign.sh <client> <slug>` and use a PNG, JPEG, or GIF at 1080×1080 or larger |
 | `identify: command not found` | `sudo apt install imagemagick` |
 | `permission denied: bin/meta` | `chmod +x bin/meta` |
 | `uv: command not found` | Install uv in your Linux/WSL shell, then restart the terminal |

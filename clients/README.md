@@ -25,7 +25,7 @@ Required in `.env`:
 - `META_MAX_DAILY_BUDGET_CENTS` — highest daily budget `meta` will send, in cents (`10000` = $100)
 - `META_MAX_LIFETIME_BUDGET_CENTS` — highest lifetime budget `meta` will send, in cents (`300000` = $3,000)
 
-If a budget is above the cap, or a cap line is missing, `meta` stops and does not call Meta. Run commands as `meta <client> ...` or `./bin/meta <client> ...`. `uv run meta` does not apply the cap.
+If a budget is above the cap, or a cap line is missing, `meta` stops and does not call Meta. `meta` also refuses `--status ACTIVE`; use `scripts/activate-campaign.sh --confirm` after review. Run commands as `meta <client> ...` or `./bin/meta <client> ...`. `uv run meta` does not apply the cap.
 
 A 1Password value works in place of a plaintext token: `META_ADS_ACCESS_TOKEN=op://Vault/item/field`. The 1Password CLI (`op`) must be installed.
 

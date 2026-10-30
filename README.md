@@ -88,7 +88,7 @@ scripts/                              # pause-campaign, pull-insights
 
 Each client `.env` sets the most you are willing to spend, in cents. The example starts at **$100/day** (`META_MAX_DAILY_BUDGET_CENTS=10000`) and **$3,000 lifetime** (`META_MAX_LIFETIME_BUDGET_CENTS=300000`). Change those two numbers for each client.
 
-`meta` refuses a create or update when `--daily-budget` or `--lifetime-budget` is above that client's cap. It also refuses the command if a cap line is missing. Nothing is sent to Meta. Listing campaigns and pulling insights are not budget writes, so they still run.
+`meta` refuses a create or update when `--daily-budget` or `--lifetime-budget` is above that client's cap, and it refuses the command if a cap line is missing. Abbreviated budget flags such as `--daily-bud` are refused as well. `--status` must be `PAUSED`; activation is `scripts/activate-campaign.sh --confirm`. Nothing is sent to Meta when a check fails. Listing campaigns and pulling insights are not budget writes, so they still run.
 
 Use `meta` or `./bin/meta`. Running `uv run meta` inside `~/meta-ads-cli` skips the ceiling.
 
@@ -110,7 +110,9 @@ Use `meta` or `./bin/meta`. Running `uv run meta` inside `~/meta-ads-cli` skips 
 ## Scripts
 
 ```bash
-./scripts/pause-campaign.sh <client> <slug>          # pause all resources
+./scripts/validate-campaign.sh <client> <slug>         # check campaign.yaml before any write
+./scripts/pause-campaign.sh <client> <slug>            # pause all resources
+./scripts/activate-campaign.sh --confirm <client> <slug>  # the only CLI path to ACTIVE
 ./scripts/pull-insights.sh <client> <slug>             # snapshot performance data
 ```
 

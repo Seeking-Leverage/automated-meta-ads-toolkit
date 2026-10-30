@@ -41,7 +41,8 @@ adset:
   billing_event: IMPRESSIONS
   countries: [US]                          # ISO 2-letter codes
   pixel_id: "123456789012345"              # required for OFFSITE_CONVERSIONS
-  custom_event_type: purchase              # lowercase snake_case — see enum below
+  custom_event_type: purchase              # lowercase snake_case — required for OFFSITE_CONVERSIONS
+  # special_ad_categories: [NONE]          # omit for NONE. Other values cannot be launched here yet.
 
 # Required: one or more creatives. Exactly one of image: or video: per creative.
 creatives:
@@ -109,12 +110,12 @@ fbadid={{ad.id}}          # Meta ad ID for attribution
 
 ## Validation rules
 
-The launch skill verifies all of these **before any write**. On failure: stop, list all errors, run zero writes.
+`scripts/validate-campaign.sh <client> <slug>` verifies all of these **before any write**. On failure: stop, list all errors, run zero writes. Image dimensions are read from PNG, JPEG, and GIF bytes.
 
 1. **Required fields** — `ad_account_id`, `campaign.name`, `campaign.objective`, budget (`daily_budget_cents` XOR `lifetime_budget_cents`), `adset.name`, `adset.optimization_goal`, `adset.countries`, `creatives[]`, `ads[]`
-2. **Conversion coupling** — if `optimization_goal: OFFSITE_CONVERSIONS`, both `pixel_id` and `custom_event_type` required
+2. **Conversion coupling** — if `optimization_goal: OFFSITE_CONVERSIONS`, both `pixel_id` and `custom_event_type` are required. `custom_event_type` on any other goal is an error
 3. **Creative asset** — exactly one of `image:` or `video:` per creative; file must exist on disk
-4. **Image dimensions** — ≥1080×1080 (checked via `sips` on macOS)
+4. **Image dimensions** — ≥1080×1080 (PNG, JPEG, or GIF; checked by the validator)
 5. **Video dimensions** — ≥1080×1080 if `ffprobe` available (optional check)
 6. **Page ID** — every `creatives[].page_id` must be set
 7. **Creative refs** — every `ads[].creative_ref` must match a `creatives[].name`

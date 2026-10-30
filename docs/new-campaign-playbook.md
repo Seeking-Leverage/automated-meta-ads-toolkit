@@ -44,9 +44,15 @@ There is **no** `meta campaign launch` CLI command. Launch via the **`launch-met
 /launch-meta-campaign <client> <slug>
 ```
 
+Check the spec before launch:
+
+```bash
+./scripts/validate-campaign.sh your-client my-campaign-slug
+```
+
 The skill will:
 
-1. Validate the spec (stop on any error — zero writes)
+1. Run that validator (stop on any error — zero writes)
 2. Show each CLI command and wait for your explicit "go"
 3. Create campaign → ad set → creatives → ads, all **PAUSED**
 4. Write IDs to `state.json` and events to `launch.log`
@@ -78,7 +84,7 @@ See **[03-performance-analysis.md](03-performance-analysis.md)** for monitoring 
 
 ## Tips
 
-- Campaigns stay PAUSED until you activate them in Ads Manager
+- Campaigns stay PAUSED until `./scripts/activate-campaign.sh --confirm <client> <slug>` or you turn them on in Ads Manager
 - Store repeated IDs in the client's `.env` to avoid retyping
 - `creative_ref` must exactly match a `creatives[].name`
 - Use lowercase enums for `objective`, `custom_event_type`, and `cta`

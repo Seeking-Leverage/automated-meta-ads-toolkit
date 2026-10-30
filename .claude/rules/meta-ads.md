@@ -43,7 +43,7 @@ meta acme-co --ad-account-id act_XXX ads campaign list
 
 - **Reads** (list, get, insights, validate): run freely
 - **Writes** (create, update): show the exact command, wait for explicit user "go" or "yes", then run. Every write. No batching.
-- **All creates stay PAUSED** — never pass `--status active`
+- **All creates stay PAUSED** — do not pass `--status`. `bin/meta` rejects any status other than `PAUSED`. Activation is `scripts/activate-campaign.sh --confirm <client> <slug>` after the review checklist.
 - **Never use `--force`**
 - **Never delete** — pause instead
 - **After every write**, show the returned JSON to the user
@@ -73,7 +73,7 @@ System user tokens typically lack `business_management` scope:
 
 What works:
 
-- Assigned pages: `curl "https://graph.facebook.com/v21.0/<sys_user_id>/assigned_pages?access_token=$TOKEN&fields=id,name"`
+- Assigned pages: `scripts/graph.sh <client> GET <sys_user_id>/assigned_pages fields=id,name`
 - Pixel by ID: `meta <client> -o json --no-input ads dataset get <pixel_id>`
 - Ad accounts: `meta <client> -o json --no-input ads adaccount list`
 
