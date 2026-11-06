@@ -4,6 +4,8 @@ Manual step-by-step for creating a campaign via the CLI. For the automated path,
 
 This produces a fully built campaign (campaign → ad set → creative → ad) in **PAUSED** status.
 
+Before the first write, run `scripts/validate-campaign.sh <client> <slug>`. Creative paths passed to `--image` must be absolute: `meta` runs the CLI from `~/meta-ads-cli`, not the repo root.
+
 ## Prerequisites
 
 - Meta Ads CLI installed and working
@@ -57,7 +59,7 @@ meta your-client -o json --no-input ads --ad-account-id act_XXXXXXXX \
   creative create \
   --name "Your Creative Name" \
   --page-id YOUR_PAGE_ID \
-  --image ./clients/your-client/campaigns/my-slug/images/your-image.jpg \
+  --image "/absolute/path/to/this/repo/clients/your-client/campaigns/my-slug/images/your-image.jpg" \
   --body "Your primary ad text here" \
   --title "Your headline here" \
   --link-url "https://yourwebsite.com/landing-page" \
@@ -83,7 +85,7 @@ meta your-client -o json --no-input ads adset list --campaign-id CAMPAIGN_ID
 meta your-client -o json --no-input ads ad list --adset-id ADSET_ID
 ```
 
-All objects should show `PAUSED` status. Activate manually in Ads Manager.
+All objects should show `PAUSED` status. `meta` refuses `--status ACTIVE`. After the review checklist, activate with `scripts/activate-campaign.sh --confirm <client> <slug>`, or in Ads Manager.
 
 ## Troubleshooting
 

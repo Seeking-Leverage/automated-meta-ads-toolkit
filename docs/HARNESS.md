@@ -65,11 +65,13 @@ Campaign intent lives in `campaign.yaml` under git. This makes specs diffable, r
 
 ### Everything creates PAUSED
 
-The launch skill never passes `--status active`. Activation is a separate human action in Ads Manager. This is an air gap between "created" and "spending."
+`bin/meta` rejects `--status` unless the value is `PAUSED`. The pinned CLI also creates objects paused when the flag is omitted. Turning objects on is `scripts/activate-campaign.sh --confirm`, which is the only path that may send `ACTIVE`, or a person in Ads Manager.
 
 ### Spend ceiling per client
 
-`bin/meta` reads `META_MAX_DAILY_BUDGET_CENTS` and `META_MAX_LIFETIME_BUDGET_CENTS` from that client's `.env`. A `--daily-budget` or `--lifetime-budget` above the cap, or a budget flag with the cap missing, stops before the CLI runs. `uv run meta` invoked on its own does not apply the ceiling.
+`bin/meta` reads `META_MAX_DAILY_BUDGET_CENTS` and `META_MAX_LIFETIME_BUDGET_CENTS` from that client's `.env`. A `--daily-budget` or `--lifetime-budget` above the cap, or a budget flag with the cap missing, stops before the CLI runs. Flags that merely look like those names (`--daily-bud`, `--lifetime-budget-extra`) are refused too. `scripts/graph.sh` refuses `daily_budget` and `lifetime_budget` fields. `uv run meta` invoked on its own does not apply the ceiling.
+
+The client `.env` is parsed. It is not executed, and only `META_*` keys are loaded, so a `PATH=` line or a `$(...)` value cannot change what the wrapper runs.
 
 ### CLI lives outside the repo
 
@@ -111,7 +113,7 @@ The launch skill appends standard UTM params to every `link_url`. They are not i
 4. **Human-readable lines precede JSON** — strip before piping to `jq`
 5. **`objective` / `cta` / `custom_event_type` are lowercase** — `outcome_sales`, `learn_more`, `purchase`
 6. **`optimization_goal` is UPPERCASE** — `OFFSITE_CONVERSIONS`, `LINK_CLICKS`
-7. **No `--bid-strategy` flag** — use Graph API directly, log as `out_of_band_patch`
+7. **No `--bid-strategy` flag** — use `scripts/graph.sh`, log as `out_of_band_patch`
 8. **No `--breakdown ad`** — loop per-ad with `--ad-id` instead
 9. **New ads show `effective_status: IN_PROCESS`** — review queue; `status` is still `PAUSED`
 10. **`platform_position` + actions blocked** — use Graph API without `actions` field
@@ -122,9 +124,9 @@ The launch skill appends standard UTM params to every `link_url`. They are not i
 | --- | --- | --- |
 | Create campaign/adset/creative/ad | Yes | — |
 | Pause/activate | Yes | — |
-| Campaign `bid_strategy` | No | `curl` POST to `/{campaign-id}` |
-| Adset placement edits | No | `curl` POST to `/{adset-id}` |
-| Page listing | No | `/{sys_user_id}/assigned_pages` GET |
+| Campaign `bid_strategy` | No | `scripts/graph.sh <client> POST <campaign-id> bid_strategy=LOWEST_COST_WITHOUT_CAP` |
+| Adset placement edits | No | `scripts/graph.sh` POST to the ad set id (no budget or status fields) |
+| Page listing | No | `scripts/graph.sh <client> GET <sys_user_id>/assigned_pages fields=id,name` |
 
 Log all Graph API calls as `out_of_band_patch` events.
 

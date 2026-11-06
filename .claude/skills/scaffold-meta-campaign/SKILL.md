@@ -63,8 +63,7 @@ adset:
   optimization_goal: LANDING_PAGE_VIEWS
   billing_event: IMPRESSIONS
   countries: [US]
-  pixel_id: "<FROM_CLIENT_ENV_OR_YOUR_PIXEL_ID>"
-  custom_event_type: purchase
+  # pixel_id and custom_event_type are required only for OFFSITE_CONVERSIONS
 
 creatives:
   - name: "Feed_V1"

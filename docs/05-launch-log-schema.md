@@ -8,6 +8,8 @@ clients/<client>/campaigns/<slug>/launch.log
 
 The log is append-only JSONL — one JSON object per line.
 
+`launch.log` and `ops.log` are gitignored (`*.log`). Insights JSON is gitignored too, because those files contain spend. `state.json` (ids only) stays in git. Treat the logs as a local audit trail.
+
 ## Three companion files
 
 | File | Role | Who writes |
@@ -94,6 +96,21 @@ Fires once at the end.
 | `retries_total` | yes | Sum of extra attempts |
 | `out_of_band_patches` | yes | Count of out-of-band events |
 | `final_state` | yes | `all_paused`, `partial`, or `failed` |
+
+## `ops.log` events
+
+`scripts/pause-campaign.sh` and `scripts/activate-campaign.sh` append one object per object they touch:
+
+| Field | Required | Description |
+| --- | --- | --- |
+| `kind` | yes | `pause` or `activate` |
+| `target` | yes | `campaign`, `adset`, or `ad` |
+| `id` | yes | Meta object ID |
+| `name` | yes | Name from `state.json` |
+| `result` | yes | `ok` or `fail` |
+| `error` | no | CLI output when `result` is `fail` |
+
+Pause keeps going after a failed ad so the campaign pause is still attempted. Activate stops at the first failure.
 
 ## Writing events
 

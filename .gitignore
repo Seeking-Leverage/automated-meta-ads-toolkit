@@ -3,6 +3,10 @@
 clients/*/.env
 clients/*/.env.local
 
+# Python
+__pycache__/
+*.pyc
+
 # OS / Editor files
 .DS_Store
 Thumbs.db
@@ -10,5 +14,8 @@ Thumbs.db
 *.swo
 *~
 
-# Logs
+# Launch and ops logs stay on the machine. Command text can be sensitive.
 *.log
+
+# Insights snapshots include spend and are local-only.
+clients/*/campaigns/*/insights/**/*.json
